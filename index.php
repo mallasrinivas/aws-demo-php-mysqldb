@@ -26,37 +26,30 @@ background-size: 100% 100%">
 </div>
 </div>
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $firstname = $_POST['firstname'];
-    $email = $_POST['email'];
-    
-    $servername = "project-db.chk8kk604eiy.ap-south-1.rds.amazonaws.com";
-    $username = "admin";
-    $password = "intel123";
-    $db = "intel";
+$firstname=$_POST['firstname'];
+$email=$_POST['email'];
+$servername = "project-db.chk8kk604eiy.ap-south-1.rds.amazonaws.com";
+$username = "admin";
+$password = "intel123";
+$db = "intel";
+// Create connection
+$conn = new mysqli($servername, $username, $password, $db);
 
-    // Create connection
-    $conn = new mysqli($servername, $username, $password, $db);
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+if(isset($_POST['firstname']) && isset($_POST['email'])){
+$sql = "INSERT INTO data (firstname,email)
+VALUES ('".$firstname."', '".$email."')";
 
-    // Check connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+if ($conn->query($sql) === TRUE) {
+    echo "New record created successfully";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
 
-    // Prepare and bind the SQL statement
-    $stmt = $conn->prepare("INSERT INTO data (firstname, email) VALUES (?, ?)");
-    $stmt->bind_param("ss", $firstname, $email);
-
-    // Execute the statement
-    if ($stmt->execute()) {
-        echo "New record created successfully";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-
-    // Close statement and connection
-    $stmt->close();
-    $conn->close();
+$conn->close();
 }
 ?>
 </body>
